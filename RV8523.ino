@@ -1,8 +1,6 @@
 /*
   RV8523 RTC (Real-Time-Clock) Example
 
-  Uno       A4 (SDA), A5 (SCL)
-  Mega      20 (SDA), 21 (SCL)
   Leonardo   2 (SDA),  3 (SCL)
   
   Note: To enable the I2C pull-up resistors on the RTC-Breakout, the jumper J1 has to be closed.
