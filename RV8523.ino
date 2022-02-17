@@ -15,6 +15,7 @@ RV8523::time  RTCtime;    // Time structure member defined in the class
 RV8523  RTC;              // Create an instance of RV8523
 
 volatile byte state = LOW;
+const int ledPin = 12;
 
 void setup()
 {
@@ -23,31 +24,37 @@ void setup()
   while(!Serial);    // Wait for serial port to connect - needed for Leonardo only
   
   RTC.begin();            // Prepare Arduino internal configuration for I2C communication
-  RTC.timeOut(500);
+¹¹  RTC.timeOut(500);
   
   delay (100);
   
   RTC.resetRTC();
   RTC.ReadAndPrintRegisters();
   
-  //RTC.stopCounting();
+  RTC.stopCounting();
   
-  RTC.setTime(16, 43, 00);
-  RTC.setDate(2022, 2, 11);
+  RTC.setTime(11, 35, 00);
+  RTC.setDate(2022, 2, 17);
   RTC.offsetCalibration(0, -6);
-  //RTC.setAlarm (30);
-  //RTC.clearFlag (Control_2, AF);
+//  RTC.setAlarm (30);
+  RTC.setAlarm (11, 54);
+  RTC.clearFlag (Control_2, AF);
+  RTC.EnableBatterySwitchover();
   RTC.startCounting();
 
-  RTC.countdownNsecTimerB(7);
+//  RTC.countdownNsecTimerB(7);
 //  RTC.countdownNsecTimerA(5);
 
-//  attachInterrupt(digitalPinToInterrupt(1), test, FALLING);
+  pinMode(ledPin, OUTPUT);                                    // set the digital pin as output
+  attachInterrupt(digitalPinToInterrupt(1), test, FALLING);
 
   RTC.ReadAndPrintRegisters();
+  state = LOW;
+  digitalWrite(ledPin, state);
+  Serial.print("State: "); Serial.print(state); Serial.print("\n");
 
   
-}
+} 
 
 void loop()
 {
@@ -57,17 +64,17 @@ void loop()
   Serial.print(RTCtime.day); Serial.print("."); Serial.print(RTCtime.month); Serial.print("."); Serial.print(RTCtime.year); 
   Serial.print("  "); Serial.print(RTCtime.hour); Serial.print(":"); Serial.print(RTCtime.min); Serial.print(":"); Serial.print(RTCtime.sec);
 
-  //RTC.ReadAndPrintRegisters();
+  RTC.ReadAndPrintRegisters();
   delay(10000);
 
-//  if( state = HIGH)
-//    Serial.print("State: "); Serial.print(state); Serial.print("\n");
-//  state = LOW;
+  Serial.print("State: "); Serial.print(state); Serial.print("\n");
 }
 
-//void test ()
-//{
-//  //I2cc.write(I2C_ADDR, 0x0F, 0xF79);
-//  state = HIGH;
-//  return;
-//}
+void test ()
+{
+  Serial.print("\nIn interrupt\n ");
+  state = HIGH;
+  digitalWrite(ledPin, state);
+  RTC.clearFlag (Control_2, AF);        // Clear "Alarm interrupt flag" to enable a new alarm interrupt
+  return;
+}
