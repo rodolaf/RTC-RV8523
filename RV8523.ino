@@ -24,7 +24,7 @@ void setup()
   while(!Serial);    // Wait for serial port to connect - needed for Leonardo only
   
   RTC.begin();            // Prepare Arduino internal configuration for I2C communication
-¹¹  RTC.timeOut(500);
+  RTC.timeOut(500);
   
   delay (100);
   
